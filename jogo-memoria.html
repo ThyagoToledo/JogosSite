@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Jogo da Memória</title>
+    <style>
+        body { font-family: Arial; text-align: center; background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%); padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        h1 { color: #333; margin-bottom: 20px; }
+        .stats { display: flex; justify-content: space-around; margin: 20px 0; font-size: 18px; font-weight: bold; color: #333; }
+        .board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 400px; margin: 0 auto; }
+        .card { width: 80px; height: 80px; background: #4a90e2; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; transition: all 0.3s; border: 3px solid #357abd; }
+        .card:hover { transform: scale(1.05); }
+        .card.flipped { background: white; border-color: #333; }
+        .card.matched { background: #4caf50; border-color: #45a049; }
+        button { padding: 12px 24px; font-size: 16px; background: #e91e63; color: white; border: none; border-radius: 25px; cursor: pointer; margin: 20px; }
+        button:hover { background: #c2185b; }
+        .win { color: #4caf50; font-size: 24px; font-weight: bold; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Jogo da Memória</h1>
+        <div class="stats">
+            <div>🔢 Jogadas: <span id="moves">0</span></div>
+            <div>⏱️ Tempo: <span id="time">0</span>s</div>
+        </div>
+        <div class="board" id="board"></div>
+        <button onclick="startNewGame()">🎮 Novo Jogo</button>
+        <div id="winMessage"></div>
+    </div>
+
+    <script>
+        const emojis = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
+        let cards = [];
+        let flippedCards = [];
+        let moves = 0;
+        let startTime = 0;
+        let timer = null;
+        let gameWon = false;
+
+        function createBoard() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+            
+            cards.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.emoji = emoji;
+                card.dataset.index = index;
+                card.onclick = () => flipCard(card);
+                board.appendChild(card);
+            });
+        }
+
+        function flipCard(card) {
+            if (gameWon || card.classList.contains('flipped') || card.classList.contains('matched') || flippedCards.length === 2) return;
+
+            card.textContent = card.dataset.emoji;
+            card.classList.add('flipped');
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                moves++;
+                document.getElementById('moves').textContent = moves;
+                setTimeout(checkMatch, 1000);
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            
+            if (card1.dataset.emoji === card2.dataset.emoji) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+                
+                if (document.querySelectorAll('.matched').length === cards.length) {
+                    gameWon = true;
+                    clearInterval(timer);
+                    document.getElementById('winMessage').innerHTML = `
+                        <div class="win">🎉 PARABÉNS! Você venceu! 🎉<br>
+                        ✨ ${moves} jogadas em ${document.getElementById('time').textContent} segundos!</div>
+                    `;
+                }
+            } else {
+                card1.textContent = '';
+                card2.textContent = '';
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+            }
+            
+            flippedCards = [];
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            timer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById('time').textContent = elapsed;
+            }, 1000);
+        }
+
+        function startNewGame() {
+            moves = 0;
+            flippedCards = [];
+            gameWon = false;
+            document.getElementById('moves').textContent = '0';
+            document.getElementById('time').textContent = '0';
+            document.getElementById('winMessage').innerHTML = '';
+            
+            if (timer) clearInterval(timer);
+            
+            createBoard();
+            startTimer();
+        }
+
+        // Iniciar o jogo
+        startNewGame();
+    </script>
+</body>
+</html>
