@@ -1,5 +1,5 @@
 <<<<<<< HEAD
-casa
+(conteúdo atual)
 =======
-No dia onde se passou o mundo, tras de volta as lembranças da vida mais intricica em cada ser.
->>>>>>> 2a473d9 (Mensagem do commit)
+(conteúdo do commit cherry-pickado)
+>>>>>>> 2a473d9...
