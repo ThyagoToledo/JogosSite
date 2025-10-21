@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✂️ Pedra, Papel e Tesoura</title>
+    <style>
+        body { font-family: Arial; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; min-height: 100vh; }
+        .container { max-width: 600px; margin: 0 auto; background: rgba(255,255,255,0.1); padding: 40px; border-radius: 20px; backdrop-filter: blur(15px); }
+        h1 { font-size: 2.5em; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .choices { display: flex; justify-content: center; gap: 20px; margin: 30px 0; }
+        .choice { width: 120px; height: 120px; background: rgba(255,255,255,0.2); border: 3px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 60px; cursor: pointer; transition: all 0.3s; }
+        .choice:hover { transform: scale(1.1); background: rgba(255,255,255,0.3); }
+        .choice:active { transform: scale(0.95); }
+        .result { font-size: 24px; margin: 30px 0; min-height: 80px; }
+        .score { display: flex; justify-content: space-around; margin: 30px 0; font-size: 20px; }
+        .score div { background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; }
+        .battle { display: flex; justify-content: space-around; align-items: center; margin: 20px 0; }
+        .player { font-size: 80px; }
+        .vs { font-size: 30px; font-weight: bold; }
+        button { padding: 15px 30px; font-size: 18px; background: #ff6b6b; color: white; border: none; border-radius: 25px; cursor: pointer; margin: 20px; }
+        button:hover { background: #ff5252; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✂️ Pedra, Papel e Tesoura</h1>
+        
+        <div class="score">
+            <div>🤖 Computador: <span id="computerScore">0</span></div>
+            <div>👤 Você: <span id="playerScore">0</span></div>
+        </div>
+        
+        <div class="choices">
+            <div class="choice" onclick="play('rock')">🗿</div>
+            <div class="choice" onclick="play('paper')">📄</div>
+            <div class="choice" onclick="play('scissors')">✂️</div>
+        </div>
+        
+        <div class="battle">
+            <div class="player" id="playerChoice">❓</div>
+            <div class="vs">VS</div>
+            <div class="player" id="computerChoice">❓</div>
+        </div>
+        
+        <div class="result" id="result">Escolha sua jogada!</div>
+        
+        <button onclick="resetGame()">🔄 Reiniciar Jogo</button>
+    </div>
+
+    <script>
+        let playerScore = 0;
+        let computerScore = 0;
+        
+        const choices = {
+            rock: { emoji: '🗿', name: 'Pedra' },
+            paper: { emoji: '📄', name: 'Papel' },
+            scissors: { emoji: '✂️', name: 'Tesoura' }
+        };
+        
+        const rules = {
+            rock: 'scissors',
+            paper: 'rock',
+            scissors: 'paper'
+        };
+
+        function play(playerChoice) {
+            const computerChoice = getComputerChoice();
+            
+            document.getElementById('playerChoice').textContent = choices[playerChoice].emoji;
+            document.getElementById('computerChoice').textContent = choices[computerChoice].emoji;
+            
+            const result = getResult(playerChoice, computerChoice);
+            displayResult(result, playerChoice, computerChoice);
+            
+            updateScore(result);
+        }
+
+        function getComputerChoice() {
+            const choiceKeys = Object.keys(choices);
+            return choiceKeys[Math.floor(Math.random() * choiceKeys.length)];
+        }
+
+        function getResult(player, computer) {
+            if (player === computer) return 'tie';
+            return rules[player] === computer ? 'win' : 'lose';
+        }
+
+        function displayResult(result, playerChoice, computerChoice) {
+            const resultElement = document.getElementById('result');
+            const playerName = choices[playerChoice].name;
+            const computerName = choices[computerChoice].name;
+            
+            if (result === 'win') {
+                resultElement.innerHTML = `🎉 Você venceu!<br>${playerName} vence ${computerName}!`;
+                resultElement.style.color = '#4caf50';
+            } else if (result === 'lose') {
+                resultElement.innerHTML = `😔 Você perdeu!<br>${computerName} vence ${playerName}!`;
+                resultElement.style.color = '#ff6b6b';
+            } else {
+                resultElement.innerHTML = `🤝 Empate!<br>Ambos escolheram ${playerName}!`;
+                resultElement.style.color = '#ffeb3b';
+            }
+        }
+
+        function updateScore(result) {
+            if (result === 'win') {
+                playerScore++;
+                document.getElementById('playerScore').textContent = playerScore;
+            } else if (result === 'lose') {
+                computerScore++;
+                document.getElementById('computerScore').textContent = computerScore;
+            }
+        }
+
+        function resetGame() {
+            playerScore = 0;
+            computerScore = 0;
+            document.getElementById('playerScore').textContent = '0';
+            document.getElementById('computerScore').textContent = '0';
+            document.getElementById('playerChoice').textContent = '❓';
+            document.getElementById('computerChoice').textContent = '❓';
+            document.getElementById('result').textContent = 'Escolha sua jogada!';
+            document.getElementById('result').style.color = 'white';
+        }
+    </script>
+</body>
+</html>
