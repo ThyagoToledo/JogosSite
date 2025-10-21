@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Adivinhe o Número</title>
+    <style>
+        body { font-family: Arial; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; }
+        .container { max-width: 400px; margin: 0 auto; background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px; backdrop-filter: blur(10px); }
+        h1 { margin-bottom: 20px; }
+        input { padding: 15px; font-size: 18px; border: none; border-radius: 8px; margin: 10px; text-align: center; width: 100px; }
+        button { padding: 15px 25px; font-size: 16px; background: #ff6b6b; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 10px; }
+        button:hover { background: #ff5252; }
+        .hint { font-size: 20px; margin: 20px 0; font-weight: bold; }
+        .attempts { color: #ffeb3b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Adivinhe o Número</h1>
+        <p>Pensei em um número entre 1 e 100!</p>
+        <div class="attempts">Tentativas: <span id="attempts">0</span></div>
+        <input type="number" id="guess" placeholder="?" min="1" max="100">
+        <br>
+        <button onclick="checkGuess()">Tentar!</button>
+        <button onclick="newGame()">Novo Jogo</button>
+        <div class="hint" id="hint">Faça sua primeira tentativa!</div>
+        <div id="history"></div>
+    </div>
+
+    <script>
+        let secretNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+        let guesses = [];
+
+        function checkGuess() {
+            const guess = parseInt(document.getElementById('guess').value);
+            const hintElement = document.getElementById('hint');
+            const attemptsElement = document.getElementById('attempts');
+            const historyElement = document.getElementById('history');
+            
+            if (!guess || guess < 1 || guess > 100) {
+                hintElement.textContent = '❌ Digite um número entre 1 e 100!';
+                return;
+            }
+
+            attempts++;
+            guesses.push(guess);
+            attemptsElement.textContent = attempts;
+            
+            if (guess === secretNumber) {
+                hintElement.innerHTML = `🎉 PARABÉNS! Você acertou em ${attempts} tentativas!`;
+                hintElement.style.color = '#4caf50';
+            } else if (guess < secretNumber) {
+                hintElement.innerHTML = '📈 Muito baixo! Tente um número maior!';
+                hintElement.style.color = '#ff9800';
+            } else {
+                hintElement.innerHTML = '📉 Muito alto! Tente um número menor!';
+                hintElement.style.color = '#ff9800';
+            }
+            
+            historyElement.innerHTML = 'Tentativas: ' + guesses.join(', ');
+            document.getElementById('guess').value = '';
+        }
+
+        function newGame() {
+            secretNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            guesses = [];
+            document.getElementById('attempts').textContent = '0';
+            document.getElementById('hint').textContent = 'Novo jogo! Faça sua tentativa!';
+            document.getElementById('hint').style.color = 'white';
+            document.getElementById('history').innerHTML = '';
+            document.getElementById('guess').value = '';
+        }
+
+        document.getElementById('guess').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkGuess();
+        });
+    </script>
+</body>
+</html>
